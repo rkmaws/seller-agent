@@ -27,7 +27,7 @@ from typing import Any, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
-from .audience_capabilities import AgenticCapabilities, AudienceCapabilities
+from .audience_capabilities import AudienceCapabilities
 from .core import PricingModel
 
 # Migration log for legacy `audience_segment_ids` -> `audience_capabilities`

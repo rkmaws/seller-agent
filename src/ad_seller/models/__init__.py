@@ -15,6 +15,12 @@ from .agent_registry import (
     RegistrySource,
     TrustStatus,
 )
+from .api_key import (
+    ApiKeyCreateRequest,
+    ApiKeyCreateResponse,
+    ApiKeyInfo,
+    ApiKeyRecord,
+)
 from .audience_capabilities import (
     AgenticCapabilities,
     AgenticCapabilityFlag,
@@ -28,12 +34,6 @@ from .audience_capabilities import (
 from .audience_ref import (
     AudienceRef,
     ComplianceContext,
-)
-from .api_key import (
-    ApiKeyCreateRequest,
-    ApiKeyCreateResponse,
-    ApiKeyInfo,
-    ApiKeyRecord,
 )
 from .buyer_identity import (
     AccessTier,
