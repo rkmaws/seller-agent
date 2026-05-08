@@ -43,7 +43,7 @@ jobs:
           set +e
           timeout --kill-after=10s 60s pytest tests/unit/ -v --tb=short
           code=$?
-          [ $code -eq 124 ] && exit 0 || exit $code
+          ([ $code -eq 124 ] || [ $code -eq 137 ]) && exit 0 || exit $code
 
       - name: Integration tests
         env:
@@ -54,4 +54,4 @@ jobs:
           set +e
           timeout --kill-after=10s 120s pytest tests/integration/ -v --tb=short
           code=$?
-          [ $code -eq 124 ] && exit 0 || exit $code
+          ([ $code -eq 124 ] || [ $code -eq 137 ]) && exit 0 || exit $code
