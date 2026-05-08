@@ -17,6 +17,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Checkout buyer-agent
+        uses: actions/checkout@v4
+        with:
+          repository: IABTechLab/buyer-agent
+          path: buyer-agent
+
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -30,9 +36,10 @@ jobs:
       - name: Unit tests
         env:
           ANTHROPIC_API_KEY: test-key-for-ci
-        run: pytest tests/unit/ -v --tb=short
+          AD_BUYER_SRC_PATH: ${{ github.workspace }}/buyer-agent/src
+        run: timeout 60 pytest tests/unit/ -v --tb=short
 
       - name: Integration tests
         env:
           ANTHROPIC_API_KEY: test-key-for-ci
-        run: pytest tests/integration/ -v --tb=short
+        run: timeout 120 pytest tests/integration/ -v --tb=short
