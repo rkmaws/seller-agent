@@ -237,8 +237,9 @@ async def set_publisher_identity(name: str, domain: str = "", org_id: str = "") 
 
 
 @mcp.tool()
-async def list_products(limit: int = 50) -> str:
+async def list_products(limit: int | None = 50) -> str:
     """List products in the catalog. These are the inventory items available for deals."""
+    limit = limit or 50
     from ..flows import ProductSetupFlow
 
     flow = ProductSetupFlow()
@@ -279,8 +280,9 @@ async def get_sync_status() -> str:
 
 
 @mcp.tool()
-async def list_inventory(limit: int = 100) -> str:
+async def list_inventory(limit: int | None = 100) -> str:
     """List raw inventory from the ad server (before product mapping)."""
+    limit = limit or 100
     from ..clients.ad_server_base import get_ad_server_client
 
     client = get_ad_server_client()
@@ -656,8 +658,9 @@ async def bulk_deal_operations(operations: str) -> str:
 
 
 @mcp.tool()
-async def list_orders(limit: int = 50) -> str:
+async def list_orders(limit: int | None = 50) -> str:
     """List orders and their current states."""
+    limit = limit or 50
     import httpx
 
     settings = _get_settings()
@@ -1026,93 +1029,111 @@ from mcp.server.fastmcp.prompts.base import Message  # noqa: E402
 
 @mcp.prompt(name="setup", description="First-time guided setup wizard")
 async def setup_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Check setup status and walk me through configuring everything "
-                "that's incomplete. Go step by step: publisher identity, ad server, "
-                "SSPs, media kit, pricing, approval gates, and buyer agent access. "
-                "Ask me one question at a time.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Check setup status and walk me through configuring everything "
+            "that's incomplete. Go step by step: publisher identity, ad server, "
+            "SSPs, media kit, pricing, approval gates, and buyer agent access. "
+            "Ask me one question at a time.",
+        )
+    ]
 
 
 @mcp.prompt(name="status", description="Configuration and health overview")
 async def status_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Show me a complete status overview: configuration state, system "
-                "health, ad server connection, SSP connectors, and any issues that "
-                "need attention.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Show me a complete status overview: configuration state, system "
+            "health, ad server connection, SSP connectors, and any issues that "
+            "need attention.",
+        )
+    ]
 
 
 @mcp.prompt(name="inventory", description="What do I have to sell?")
 async def inventory_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Show me my current inventory: products, media kit packages, and "
-                "sync status. Highlight anything that needs attention.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Show me my current inventory: products, media kit packages, and "
+            "sync status. Highlight anything that needs attention.",
+        )
+    ]
 
 
 @mcp.prompt(name="deals", description="Full deal status report")
 async def deals_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Give me a full status report on all deal activity: active deals, "
-                "deals in negotiation, recently completed deals, and any deals with "
-                "issues. Include SSP distribution status.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Give me a full status report on all deal activity: active deals, "
+            "deals in negotiation, recently completed deals, and any deals with "
+            "issues. Include SSP distribution status.",
+        )
+    ]
 
 
 @mcp.prompt(name="queue", description="Inbound items needing action")
 async def queue_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Show me everything in the inbound queue that needs my action: "
-                "pending deal requests, approvals waiting for my decision, and "
-                "proposals I need to review. Most urgent first.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Show me everything in the inbound queue that needs my action: "
+            "pending deal requests, approvals waiting for my decision, and "
+            "proposals I need to review. Most urgent first.",
+        )
+    ]
 
 
 @mcp.prompt(name="new-deal", description="Guided deal creation")
 async def new_deal_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Help me create a new deal. Walk me through it step by step: which "
-                "inventory, deal type (PG/PD/PA), pricing, targeting, and which "
-                "buyers or SSPs to distribute to.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Help me create a new deal. Walk me through it step by step: which "
+            "inventory, deal type (PG/PD/PA), pricing, targeting, and which "
+            "buyers or SSPs to distribute to.",
+        )
+    ]
 
 
 @mcp.prompt(name="configure", description="Event bus flows, approval gates, guard conditions")
 async def configure_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Show me all configurable automation rules: event bus flows, approval "
-                "gates, and guard conditions. Tell me what each one does and let me "
-                "add, modify, or remove them.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Show me all configurable automation rules: event bus flows, approval "
+            "gates, and guard conditions. Tell me what each one does and let me "
+            "add, modify, or remove them.",
+        )
+    ]
 
 
 @mcp.prompt(name="buyers", description="Buyer agent activity and inbound interest")
 async def buyers_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="Show me which buyer agents have been accessing my media kit and "
-                "inventory recently. For each buyer, show what they looked at, "
-                "whether they initiated any deals, and their current trust level. "
-                "I want to know who to follow up with.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="Show me which buyer agents have been accessing my media kit and "
+            "inventory recently. For each buyer, show what they looked at, "
+            "whether they initiated any deals, and their current trust level. "
+            "I want to know who to follow up with.",
+        )
+    ]
 
 
 @mcp.prompt(name="help", description="What can this agent do?")
 async def help_prompt() -> list[Message]:
-    return [Message(
-        role="user",
-        content="List all the things I can do with this seller agent, organized by "
-                "category. Include the slash commands available and a brief "
-                "description of each.",
-    )]
+    return [
+        Message(
+            role="user",
+            content="List all the things I can do with this seller agent, organized by "
+            "category. Include the slash commands available and a brief "
+            "description of each.",
+        )
+    ]
 
 
 # =============================================================================
@@ -1124,9 +1145,10 @@ from ..events.bus import get_event_bus  # noqa: E402
 
 
 @mcp.tool()
-async def get_inbound_queue(limit: int = 50) -> str:
+async def get_inbound_queue(limit: int | None = 50) -> str:
     """Get everything waiting for publisher action: pending approvals, unresolved
     proposals. Returns a unified list sorted by urgency (most urgent first)."""
+    limit = limit or 50
     from datetime import timedelta
 
     items: list[dict] = []
@@ -1145,14 +1167,16 @@ async def get_inbound_queue(limit: int = 50) -> str:
                 if (req.expires_at - now_naive) < timedelta(hours=2):
                     urgency = "high"
 
-            items.append({
-                "type": "approval",
-                "id": req.approval_id,
-                "summary": req.context.get("summary", f"{req.gate_name} for {req.flow_type}"),
-                "timestamp": req.created_at.isoformat() if req.created_at else "",
-                "from": req.context.get("buyer", ""),
-                "urgency": urgency,
-            })
+            items.append(
+                {
+                    "type": "approval",
+                    "id": req.approval_id,
+                    "summary": req.context.get("summary", f"{req.gate_name} for {req.flow_type}"),
+                    "timestamp": req.created_at.isoformat() if req.created_at else "",
+                    "from": req.context.get("buyer", ""),
+                    "urgency": urgency,
+                }
+            )
     except Exception as e:
         warnings.append(f"Approval gate unavailable: {e}")
 
@@ -1171,14 +1195,16 @@ async def get_inbound_queue(limit: int = 50) -> str:
 
         for ev in received:
             if ev.proposal_id and ev.proposal_id not in resolved_ids:
-                items.append({
-                    "type": "proposal",
-                    "id": ev.proposal_id,
-                    "summary": f"Proposal {ev.proposal_id} received",
-                    "timestamp": ev.timestamp.isoformat() if ev.timestamp else "",
-                    "from": ev.payload.get("buyer", ev.session_id or ""),
-                    "urgency": "normal",
-                })
+                items.append(
+                    {
+                        "type": "proposal",
+                        "id": ev.proposal_id,
+                        "summary": f"Proposal {ev.proposal_id} received",
+                        "timestamp": ev.timestamp.isoformat() if ev.timestamp else "",
+                        "from": ev.payload.get("buyer", ev.session_id or ""),
+                        "urgency": "normal",
+                    }
+                )
     except Exception as e:
         warnings.append(f"Event bus unavailable: {e}")
 
@@ -1199,9 +1225,11 @@ async def get_inbound_queue(limit: int = 50) -> str:
 
 
 @mcp.tool()
-async def get_buyer_activity(days: int = 7, limit: int = 50) -> str:
+async def get_buyer_activity(days: int | None = 7, limit: int | None = 50) -> str:
     """Show buyer agent engagement: who accessed inventory, initiated deals,
     or negotiated recently. Grouped by buyer identity."""
+    days = days or 7
+    limit = limit or 50
     from datetime import timedelta
 
     warnings: list[str] = []
@@ -1237,12 +1265,14 @@ async def get_buyer_activity(days: int = 7, limit: int = 50) -> str:
                 }
 
             entry = buyers_map[agent_id]
-            entry["activity_summary"].append({
-                "event_type": ev.event_type.value,
-                "timestamp": ev.timestamp.isoformat() if ev.timestamp else "",
-                "proposal_id": ev.proposal_id or None,
-                "deal_id": ev.deal_id or None,
-            })
+            entry["activity_summary"].append(
+                {
+                    "event_type": ev.event_type.value,
+                    "timestamp": ev.timestamp.isoformat() if ev.timestamp else "",
+                    "proposal_id": ev.proposal_id or None,
+                    "deal_id": ev.deal_id or None,
+                }
+            )
 
             # Update last_seen
             if ev.timestamp:
@@ -1295,25 +1325,27 @@ async def list_configurable_flows() -> str:
         "required_flows": required_list,
         "configurable": True,
         "hint": "Use set_approval_gates to enable/disable, change timeout, or "
-                "update which flows require human approval.",
+        "update which flows require human approval.",
     }
 
     # --- Guard conditions from OrderStateMachine ---
     rules = _build_default_rules()
     guard_rules = []
     for rule in rules:
-        guard_rules.append({
-            "from_status": rule.from_status.value,
-            "to_status": rule.to_status.value,
-            "description": rule.description,
-            "has_guard": rule.guard is not None,
-        })
+        guard_rules.append(
+            {
+                "from_status": rule.from_status.value,
+                "to_status": rule.to_status.value,
+                "description": rule.description,
+                "has_guard": rule.guard is not None,
+            }
+        )
 
     guard_conditions = {
         "rules": guard_rules,
         "configurable": True,
         "hint": "Guard conditions control which order state transitions are "
-                "allowed. Custom guards can be added via OrderStateMachine.add_rule().",
+        "allowed. Custom guards can be added via OrderStateMachine.add_rule().",
     }
 
     # --- Event bus subscriptions (runtime only) ---
@@ -1322,10 +1354,12 @@ async def list_configurable_flows() -> str:
         bus = await get_event_bus()
         subscribers = getattr(bus, "_subscribers", {})
         for event_type, subs in subscribers.items():
-            event_flows_list.append({
-                "event_type": event_type,
-                "subscriber_count": len(subs),
-            })
+            event_flows_list.append(
+                {
+                    "event_type": event_type,
+                    "subscriber_count": len(subs),
+                }
+            )
     except Exception:
         pass
 
@@ -1333,8 +1367,8 @@ async def list_configurable_flows() -> str:
         "subscriptions": event_flows_list,
         "configurable": False,
         "hint": "Event bus subscriptions are runtime-only. They reflect what is "
-                "actively listening in the current process. On a fresh start with "
-                "no flows triggered, this section will be empty.",
+        "actively listening in the current process. On a fresh start with "
+        "no flows triggered, this section will be empty.",
     }
 
     result = {
